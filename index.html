@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transportes Amsterdam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- Lucide Icons, ISC License: https://lucide.dev/license -->
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
+  scroll-behavior:smooth;
+}
+
+body{
+  background:#f4f9ff;
+  color:#333; 
+  overflow-x:hidden;
+}
+
+/* --- FONDO DECORATIVO (Curva Azul) --- */
+.fondo-web {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1; 
+  pointer-events: none; 
+}
+
+.fondo-web::after {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  left: 0;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+  border-radius: 50% 50% 0 0 / 200px 200px 0 0;
+  border-top: 6px solid #e0e0e0;
+  box-shadow: 0 -10px 30px rgba(0, 100, 255, 0.3);
+}
+
+/* LOADER */
+.loader{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:#ffffff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  transition: opacity 0.6s;
+}
+.loader.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+.loader img{
+  width:120px;
+  max-width: 40vw;
+  animation:zoom 1.5s ease infinite alternate;
+}
+@keyframes zoom{
+  from{transform:scale(0.9);}
+  to{transform:scale(1.1);}
+}
+
+/* NAV */
+.navbar{
+  position:fixed;
+  width:100%;
+  top:0;
+  padding:20px 40px;
+  display:flex;
+  justify-content:center;
+  background:rgba(255,255,255,0.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:0.4s;
+  z-index:100;
+}
+.navbar.scrolled{
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.menu{
+  display:flex;
+  gap:40px;
+  list-style:none;
+}
+.menu:hover a{
+  opacity:0.2;
+}
+.menu a{
+  color:#0056b3;
+  font-weight: bold;
+  text-decoration:none;
+  letter-spacing:2px;
+  transition:0.3s;
+}
+.menu a:hover{
+  opacity:1;
+  transform:scale(1.2);
+  color:#007bff;
+}
+
+/* LOGO PRINCIPAL */
+.logo-top{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  width: min(45vw, 500px);
+  max-width: 500px;
+  max-height: 60vh;
+  height: auto;
+  object-fit: contain;
+  transition:0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index:50;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+  pointer-events: none;
+  opacity:1;
+}
+.logo-top.small{
+  width:156px;
+  top:80px;
+  transform:translateX(-50%);
+  z-index:120;
+  opacity:0.9;
+}
+
+.logo-top.esquina{
+  width:156px;
+  top:20px;
+  left:20px;
+  transform:translate(0, 0);
+  z-index:120;
+  opacity:0.9;
+}
+
+/* WATERMARK */
+.logo-fixed{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width: min(45vw, 500px);
+  max-height: 60vh;
+  height: auto;
+  object-fit: contain;
+  opacity:0.06;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ============================================ */
+/* HERO - SIN RECUADRO BLANCO, COLORES DEL LOGO */
+/* ============================================ */
+.hero{
+  min-height:100vh;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  position:relative;
+  z-index: 60;
+  padding: 120px 20px 60px;
+}
+
+.overlay{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:transparent; 
+}
+
+.content{
+  position:relative;
+  z-index:2;
+  padding: 30px 20px;
+  background: transparent;
+  max-width: 100%;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.content.visible{
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Título principal - AMSTERDAM grande + SPA pequeño */
+.hero h1{
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: clamp(10px, 2.5vw, 28px);
+  margin-bottom: 20px;
+  line-height: 1;
+  flex-wrap: nowrap;
+}
+
+/* AMSTERDAM en negro grande */
+.hero h1 .amsterdam{
+  font-family: "Montserrat", Arial, sans-serif;
+  font-size: clamp(40px, 10vw, 140px);
+  font-weight: 300;
+  letter-spacing: clamp(6px, 1.1vw, 15px);
+  display: block;
+  width: auto;
+  max-width: min(88vw, 1080px);
+  height: clamp(28px, 8vw, 100px);
+  overflow: hidden;
+  line-height: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: center;
+  color: #0d0d0d;
+  text-shadow: 0 2px 6px rgba(255,255,255,0.85);
+  text-transform: uppercase;
+}
+
+.hero h1 .amsterdam-wordmark{
+  display: block;
+  width: 100%;
+  height: auto;
+  flex: none;
+  /* Recorta el espacio transparente superior para mostrar la palabra del logo */
+  transform: translateY(-37%);
+}
+
+/* SPA en naranjo pequeño al lado */
+.hero h1 .spa{
+  flex: 0 0 auto;
+  white-space: nowrap;
+  margin-left: clamp(-88px, -6vw, -20px);
+  font-size: clamp(18px, 3vw, 45px);
+  font-weight: 900;
+  letter-spacing: clamp(1px, 0.4vw, 4px);
+  color: #ff6b00;
+  text-shadow: 0 2px 6px rgba(255,255,255,0.85);
+  text-transform: uppercase;
+  align-self: flex-end;
+  padding-bottom: clamp(6px, 1vw, 18px);
+}
+
+/* Descripción */
+.hero p {
+  color: #1a1a1a;
+  font-size: clamp(15px, 1.7vw, 20px);
+  font-weight: 500;
+  line-height: 1.7;
+  letter-spacing: 0.5px;
+  max-width: 720px;
+  margin: 10px auto 0;
+  padding: 0 15px;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.9);
+}
+
+/* Botón - negro con hover naranjo del logo */
+.btn{
+  display:inline-block;
+  margin-top:35px;
+  padding:16px 50px;
+  border:2px solid #0d0d0d;
+  background: #0d0d0d;
+  color:#fff;
+  font-size: clamp(15px, 1.4vw, 17px);
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration:none;
+  border-radius: 50px;
+  transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  white-space:nowrap;
+}
+
+.btn:hover{
+  background: #ff6b00;
+  border-color: #ff6b00;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(255, 107, 0, 0.45);
+  color: #fff;
+}
+
+.hero-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:14px;
+}
+
+.hero-actions .btn{
+  margin-top:30px;
+}
+
+.btn-secondary{
+  background:#fff;
+  border-color:#fff;
+  color:#0d0d0d;
+}
+
+.btn-secondary:hover{
+  background:#ff6b00;
+  border-color:#ff6b00;
+  color:#fff;
+}
+
+/* SECCIONES */
+.services, #nosotros, .contact {
+  background:#ffffff;
+}
+
+.services{
+  padding:120px 20px;
+  position: relative; 
+}
+.services h2, #nosotros h2, .contact h2 {
+  text-align: center;
+  color: #0056b3;
+  font-size: clamp(28px, 5vw, 50px);
+  margin-bottom: 50px;
+  word-wrap:break-word;
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:30px;
+  max-width:1200px;
+  margin:auto;
+}
+.service{
+  position:relative;
+  text-align:center;
+  cursor:pointer;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: 0.3s;
+}
+.service:hover{
+  transform: translateY(-5px);
+}
+.service img{
+  display:block;
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  filter:grayscale(100%);
+  transition:0.4s;
+}
+.service:hover img{
+  transform:scale(1.05);
+  filter:grayscale(0);
+}
+.service-label{
+  position:absolute;
+  inset:auto 0 0;
+  z-index:1;
+  padding:clamp(12px, 2vw, 18px) 14px;
+  color:#fff;
+  font-size:clamp(16px, 2vw, 21px);
+  font-weight:800;
+  line-height:1.2;
+  text-align:left;
+  text-shadow:0 1px 4px rgba(0,0,0,.65);
+  background:linear-gradient(transparent, rgba(0, 29, 59, .88));
+  pointer-events:none;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:rgba(0, 86, 179, 0.9);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  z-index:999;
+  padding:20px;
+  top:0;
+  left:0;
+}
+.modal.active{
+  display:flex;
+}
+.modal-content{
+  background: #fff;
+  color: #333;
+  max-width:500px;
+  width:90%;
+  padding: 30px;
+  border-radius: 20px;
+  font-size:clamp(16px, 2vw, 20px);
+  font-weight: bold;
+  line-height: 1.6;
+  word-wrap:break-word;
+}
+
+/* NOSOTROS */
+#nosotros {
+  padding:120px 20px;
+  text-align:center;
+  background:#f4f9ff;
+}
+
+#nosotros h2 {
+  margin-bottom: 30px;
+}
+
+.nosotros-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 60px);
+  max-width: 1280px;
+  margin: 0 auto 60px;
+}
+
+.nosotros-block {
+  min-width: 0;
+  margin: 0;
+  padding: 0 15px;
+  text-align: left;
+}
+
+.nosotros-block h3 {
+  color: #0056b3;
+  font-size: clamp(22px, 3vw, 32px);
+  margin-bottom: 20px;
+  text-align: left;
+  letter-spacing: 2px;
+  position: relative;
+  display: block;
+}
+
+.nosotros-block h3::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #007bff, #0056b3);
+  border-radius: 4px;
+  margin: 12px 0 0;
+}
+.valores-heading{
+  text-align:center;
+}
+.valores-heading h3{
+  text-align:center;
+}
+.valores-heading h3::after{
+  margin:12px auto 0;
+}
+
+.nosotros-block p {
+  color:#555;
+  font-size:clamp(15px, 1.5vw, 18px);
+  line-height:1.9;
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+/* IMAGEN DEL CAMIÓN */
+.camion-nosotros {
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0 15px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(12px, 2vw, 22px);
+  align-items: center;
+}
+
+.camion-image-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-width: 0;
+  isolation: isolate;
+}
+
+.camion-image-wrap::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 9%;
+  bottom: 3%;
+  width: 82%;
+  height: clamp(15px, 2.2vw, 25px);
+  border-radius: 50%;
+  background: rgba(24, 42, 58, 0.48);
+  filter: blur(14px);
+}
+
+.camion-nosotros img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 25px rgba(0, 86, 179, 0.25));
+  transition: 0.5s ease;
+}
+
+.camion-nosotros img:hover {
+  transform: scale(1.03);
+}
+
+/* Misión y Visión */
+.mv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto 60px;
+  padding: 0 15px;
+}
+
+.mv-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 30px rgba(0, 86, 179, 0.08);
+  border-top: 5px solid #007bff;
+  transition: 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+
+.mv-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(0,123,255,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.mv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px rgba(0, 86, 179, 0.15);
+}
+
+.mv-card .mv-icon {
+  color:#0056b3;
+  margin-bottom:15px;
+  display:grid;
+  place-items:center;
+}
+
+.lucide-icon{
+  width:1em;
+  height:1em;
+  stroke-width:1.8;
+  vertical-align:middle;
+  flex:none;
+}
+.mv-icon .lucide-icon{width:clamp(36px,5vw,50px);height:clamp(36px,5vw,50px)}
+.valor-icon .lucide-icon{width:clamp(28px,3vw,36px);height:clamp(28px,3vw,36px)}
+.card-icon{color:#0056b3;margin-bottom:10px}
+.card-icon .lucide-icon{width:clamp(30px,4vw,40px);height:clamp(30px,4vw,40px)}
+.contact-icon{color:#0056b3;width:18px;height:18px;margin-right:5px}
+
+.mv-card h4 {
+  color: #0056b3;
+  font-size: clamp(20px, 2.5vw, 26px);
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+}
+
+.mv-card p {
+  color:#555;
+  font-size:clamp(14px, 1.4vw, 16px);
+  line-height:1.8;
+  text-align: center;
+}
+
+/* Tarjetas de datos */
+#nosotros .cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:30px;
+  max-width:900px;
+  margin:24px auto 0;
+}
+.respaldo-heading{
+  margin:58px auto 0;
+  text-align:center;
+}
+.respaldo-heading h3{
+  margin:0;
+  color:#0056b3;
+  font-size:clamp(21px, 3vw, 32px);
+  letter-spacing:1px;
+  line-height:1.2;
+}
+#nosotros .card {
+  background:#ffffff;
+  padding:30px;
+  border-radius:12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-bottom: 4px solid #007bff;
+  transition: 0.3s;
+}
+
+#nosotros .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 86, 179, 0.12);
+}
+
+#nosotros .card h3 {
+  color: #0056b3;
+  margin-bottom: 8px;
+  font-size: clamp(16px, 1.8vw, 20px);
+}
+
+/* Valores */
+.valores-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(10px, 1.5vw, 20px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 15px;
+  align-items: stretch;
+}
+
+.valor {
+  box-sizing: border-box;
+  min-width: 0;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: clamp(14px, 1.8vw, 25px) clamp(8px, 1.1vw, 15px);
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  transition: 0.3s;
+  border-bottom: 3px solid #007bff;
+  overflow-wrap: anywhere;
+}
+
+.valor:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 86, 179, 0.12);
+}
+
+.valor .valor-icon {
+  font-size: clamp(24px, 2.4vw, 36px);
+  margin-bottom: 10px;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.valor h5 {
+  max-width: 100%;
+  color: #0056b3;
+  font-size: clamp(11px, 1.05vw, 15px);
+  letter-spacing: clamp(0px, 0.07vw, 1px);
+  line-height: 1.25;
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.valor p {
+  max-width: 100%;
+  color: #777;
+  font-size: clamp(11px, 0.98vw, 14px);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* CONTACTO */
+.contact{
+  padding:100px 20px;
+  text-align:center;
+}
+.contact p {
+  color: #555;
+  margin-bottom: 5px;
+  font-size: clamp(15px, 1.5vw, 18px);
+  word-wrap:break-word;
+}
+
+/* MAPA */
+.map{
+  width:100%;
+  max-width:900px;
+  height:300px;
+  border:0;
+  margin:30px auto 0;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display:block;
+}
+
+
+/* COBERTURA */
+.coverage{
+  padding:100px 24px;
+  background:linear-gradient(180deg,#f4f9ff 0%,#fff 100%);
+  scroll-margin-top:90px;
+}
+.coverage-inner{
+  max-width:1280px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  align-items:center;
+  gap:clamp(24px,4vw,52px);
+}
+.coverage-copy{max-width:510px}
+.coverage-kicker{
+  color:#ff6b00;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.coverage-copy h2{
+  color:#0056b3;
+  font-size:clamp(30px,4vw,48px);
+  line-height:1.12;
+  margin:12px 0 18px;
+}
+.coverage-copy p{
+  color:#4f5c66;
+  font-size:17px;
+  line-height:1.75;
+}
+.coverage-range{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:28px 0 8px;
+}
+.coverage-range>div:not(.coverage-divider){display:flex;align-items:center;gap:10px}
+.coverage-range strong,.coverage-range small{display:block}
+.coverage-range strong{color:#123b5d;font-size:15px}
+.coverage-range small{color:#71808c;font-size:12px}
+.coverage-dot{width:13px;height:13px;border-radius:50%;background:#ff6b00;box-shadow:0 0 0 5px rgba(255,107,0,.13)}
+.coverage-dot.south{background:#0056b3;box-shadow:0 0 0 5px rgba(0,86,179,.13)}
+.coverage-divider{height:2px;flex:1;max-width:85px;background:linear-gradient(90deg,#ff6b00,#0056b3)}
+.coverage-cta{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-top:20px;
+  color:#0056b3;
+  font-weight:800;
+  text-decoration:none;
+  border-bottom:2px solid #ff6b00;
+  padding-bottom:5px;
+}
+.coverage-cta:hover{color:#ff6b00}
+.coverage-cta span:first-child{display:inline}
+.chile-map-card{
+  width:100%;
+  max-width:720px;
+  justify-self:center;
+  padding:clamp(16px,2.5vw,30px);
+  border:1px solid #e3edf4;
+  border-radius:24px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 18px 45px rgba(0,70,120,.10);
+}
+.route-map-layout{
+  height:clamp(560px,52vw,680px);
+  display:flex;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:clamp(16px,3vw,32px);
+}
+.chile-map-track{
+  position:relative;
+  display:block;
+  height:100%;
+  flex:0 0 auto;
+  aspect-ratio:547.8 / 2000;
+}
+.chile-map-image{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center top;
+}
+.map-route-line{
+  position:absolute;
+  z-index:1;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  pointer-events:none;
+}
+.map-route-line path{
+  fill:none;
+  stroke:#ff6b00;
+  stroke-width:2px;
+  stroke-dasharray:5 5;
+  stroke-linecap:round;
+  vector-effect:non-scaling-stroke;
+  opacity:.9;
+}
+.coverage-cities{
+  position:relative;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  flex:1 1 170px;
+  min-width:125px;
+  max-width:190px;
+  margin:0;
+  padding:4px 0;
+  color:#31546d;
+  font-size:13px;
+  font-weight:700;
+}
+.coverage-cities li{z-index:1}
+.coverage-city-button{
+  appearance:none;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  padding:2px 5px;
+  margin:-2px -5px;
+  line-height:1.15;
+  border-radius:8px;
+  transition:background-color .2s ease,color .2s ease,transform .2s ease;
+}
+.coverage-city-button:hover,
+.coverage-city-button.is-selected{
+  color:#0056b3;
+  background:#eaf4ff;
+  transform:translateX(3px);
+}
+.coverage-city-button:focus-visible{
+  outline:2px solid #ff6b00;
+  outline-offset:2px;
+}
+.coverage-cities li.is-selected::before{
+  background:#ff6b00;
+  box-shadow:0 0 0 4px rgba(255,107,0,.18);
+}
+.coverage-cities li.is-passing::before{
+  background:#ff6b00;
+  box-shadow:0 0 0 5px rgba(255,107,0,.2);
+  animation:city-stop-pulse .8s ease-out infinite;
+}
+.coverage-cities li.is-passing .coverage-city-button{
+  color:#0056b3;
+  background:#eaf4ff;
+}
+@keyframes city-stop-pulse{
+  0%{box-shadow:0 0 0 0 rgba(255,107,0,.45)}
+  75%{box-shadow:0 0 0 7px rgba(255,107,0,0)}
+  100%{box-shadow:0 0 0 5px rgba(255,107,0,.2)}
+}
+.coverage-cities::before{
+  content:"";
+  position:absolute;
+  left:-15px;
+  top:12px;
+  bottom:12px;
+  width:2px;
+  background:linear-gradient(#ff6b00,#0056b3);
+  opacity:.55;
+}
+.coverage-cities li{
+  position:absolute;
+  left:0;
+  top:var(--map-y);
+  width:100%;
+  padding-left:3px;
+  transform:translateY(-50%);
+}
+.coverage-cities li::before{
+  content:"";
+  position:absolute;
+  left:-19px;
+  top:50%;
+  width:9px;
+  height:9px;
+  transform:translateY(-50%);
+  border-radius:50%;
+  background:#145c91;
+  border:2px solid #fff;
+  box-shadow:0 0 0 1px #145c91;
+}
+.coverage-cities li.endpoint{color:#0056b3}
+.coverage-cities li.endpoint::before{background:#ff6b00;box-shadow:0 0 0 1px #ff6b00}
+.coverage-cities strong,.coverage-cities span{display:block}
+.coverage-cities span{font-size:10px;color:#71808c;font-weight:500;margin-top:2px}
+.route-truck{
+  position:absolute;
+  z-index:3;
+  left:54%;
+  top:3.5%;
+  width:clamp(68px,8vw,100px);
+  height:auto;
+  aspect-ratio:3 / 2;
+  object-fit:contain;
+  object-position:center;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 3px 5px rgba(0,35,70,.35));
+  pointer-events:none;
+  animation:truck-route-travel 24s ease-in-out infinite alternate;
+}
+@keyframes truck-route-travel{
+  from{top:3.5%}
+  to{top:92.5%}
+}
+.city-selection{
+  margin:14px auto 0;
+  padding:12px 15px;
+  border-radius:12px;
+  background:#f0f7fd;
+  color:#31546d;
+  font-size:13px;
+  line-height:1.5;
+}
+.city-selection[hidden]{display:none}
+.city-selection strong{display:block;color:#0056b3;font-size:14px}
+.city-selection p{margin:3px 0 0}
+.route-live-status{
+  margin:13px 0 0;
+  color:#0056b3;
+  font-size:13px;
+  font-weight:700;
+  text-align:center;
+}
+.map-caption{text-align:center;margin:14px 0 4px;color:#667784;font-size:13px}
+@media(prefers-reduced-motion:reduce){
+  .route-truck,.coverage-cities li.is-passing::before{animation:none}
+  .coverage-city-button{transition:none}
+  .route-live-status{display:none}
+}
+@media(max-width:1000px){
+  .coverage{padding:75px 20px}
+  .coverage-inner{grid-template-columns:1fr;gap:30px}
+  .coverage-copy{max-width:680px;margin:0 auto;text-align:center}
+  .chile-map-card{max-width:760px}
+  .coverage-range{max-width:430px;margin:26px auto 8px}
+  .coverage-cta{margin-top:18px}
+}
+@media(max-width:480px){
+  .coverage{padding:64px 15px}
+  .coverage-copy p{font-size:15px}
+  .chile-map-card{padding:14px 10px;border-radius:18px}
+  .route-map-layout{height:520px;gap:12px}
+  .coverage-cities{min-width:0;max-width:none;font-size:11px}
+  .coverage-cities span{font-size:9px}
+  .coverage-city-button{padding:1px 4px;margin:-1px -4px;line-height:1.1}
+  .coverage-range{gap:9px}
+  .coverage-range strong{font-size:13px}
+}
+
+/* SOCIAL ICONS */
+.socials .social-icon {
+  width: clamp(30px, 4vw, 40px);
+  height: clamp(30px, 4vw, 40px);
+  object-fit: contain;
+  display: block;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.social-link:hover {
+  transform: scale(1.15);
+  opacity: 0.85;
+}
+
+/* ============================================ */
+/* RESPONSIVE - BREAKPOINTS COMPLETOS           */
+/* ============================================ */
+
+/* Pantallas gigantes / 4K (>1920px) */
+@media (min-width:1921px){
+  .logo-top{
+    width: min(40vw, 700px);
+    max-width: 700px;
+  }
+  .logo-fixed{
+    width: min(40vw, 700px);
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(140px, 8vw, 180px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(45px, 2.5vw, 60px);
+  }
+  .services-grid{
+    max-width: 1600px;
+  }
+  .mv-grid,
+  .valores-grid,
+  #nosotros .cards{
+    max-width: 1400px;
+  }
+}
+
+/* Laptops grandes / MacBook Pro 16" (1441px - 1920px) */
+@media (max-width:1920px) and (min-width:1441px){
+  .logo-top{
+    width: min(42vw, 620px);
+    max-width: 620px;
+  }
+  .logo-fixed{
+    width: min(42vw, 620px);
+  }
+}
+
+/* Laptops estándar / MacBook Air 13" (1201px - 1440px) */
+@media (max-width:1440px){
+  .logo-top{
+    width: min(45vw, 500px);
+    max-width: 500px;
+    max-height: 60vh;
+  }
+  .logo-fixed{
+    width: min(45vw, 500px);
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(60px, 9vw, 120px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(22px, 3vw, 40px);
+  }
+  .services-grid{
+    gap: 30px;
+  }
+  .service img{
+    height: 200px;
+  }
+}
+
+/* Laptops pequeñas / tablets horizontales (993px - 1200px) */
+@media (max-width:1200px){
+  .logo-top{
+    width: min(45vw, 440px);
+    max-width: 440px;
+    max-height: 55vh;
+  }
+  .logo-fixed{
+    width: min(45vw, 440px);
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(52px, 9vw, 100px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(20px, 3vw, 34px);
+  }
+  .menu{
+    gap: 30px;
+  }
+  .services-grid{
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+  }
+  .service img{
+    height: 190px;
+  }
+  .mv-grid{
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* Tablets verticales (769px - 992px) */
+@media (max-width:992px){
+  .logo-top{
+    width: min(50vw, 380px);
+    max-width: 380px;
+    max-height: 50vh;
+  }
+  .logo-fixed{
+    width: min(50vw, 380px);
+  }
+  .logo-top.small{
+    width: 120px;
+    top: 75px;
+  }
+  .logo-top.esquina{
+    width: 120px;
+    top: 18px;
+    left: 18px;
+  }
+  .hero{
+    padding: 110px 20px 50px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(46px, 9vw, 90px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(18px, 3vw, 30px);
+  }
+  .services,
+  #nosotros,
+  .contact{
+    padding: 100px 20px;
+  }
+  .service img{
+    height: 180px;
+  }
+}
+
+/* Tablets pequeñas / móviles grandes (577px - 768px) */
+@media(max-width:768px){
+  .nosotros-intro{
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .nosotros-block h3{
+    text-align: center;
+  }
+  .nosotros-block h3::after{
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .camion-nosotros img{
+    max-width: 520px;
+  }
+  .navbar{
+    padding: 16px 20px;
+  }
+  .menu{
+    gap:20px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .menu a{
+    font-size:13px;
+    letter-spacing:1px;
+  }
+  .logo-top{
+    width: min(60vw, 320px);
+    max-width: 320px;
+    max-height: 45vh;
+  }
+  .logo-fixed{
+    width: min(60vw, 320px);
+  }
+  .logo-top.small{
+    width:108px;
+    top:70px;
+  }
+  .logo-top.esquina{
+    width:108px;
+    top: 16px;
+    left:15px;
+  }
+  .hero{
+    padding: 100px 20px 50px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(42px, 10vw, 80px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(18px, 3.5vw, 28px);
+  }
+  .service img{
+    height:200px;
+  }
+  .btn{
+    padding:14px 38px;
+    white-space:normal;
+  }
+  .content{
+    padding:25px 15px;
+  }
+  .nosotros-block p {
+    text-align: left;
+  }
+  .mv-card {
+    padding: 30px 20px;
+  }
+  .camion-nosotros img {
+    max-width: 90%;
+  }
+  .services-grid{
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 25px;
+  }
+}
+
+/* Móviles (481px - 576px) */
+@media(max-width:576px){
+  .valores-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .navbar{
+    padding: 14px 15px;
+  }
+  .menu{
+    gap: 14px;
+  }
+  .menu a{
+    font-size:12px;
+    letter-spacing:0.8px;
+  }
+  .logo-top{
+    width: min(65vw, 280px);
+    max-width: 280px;
+    max-height: 40vh;
+  }
+  .logo-fixed{
+    width: min(65vw, 280px);
+  }
+  .logo-top.small{
+    width:95px;
+    top:65px;
+  }
+  .logo-top.esquina{
+    width:95px;
+    top: 14px;
+    left:12px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(38px, 11vw, 62px);
+    letter-spacing: 2px;
+  }
+  .hero h1 .spa{
+    font-size: clamp(16px, 4vw, 22px);
+  }
+  .hero p{
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .service img{
+    height: 180px;
+  }
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media(max-width:480px){
+  .navbar{
+    padding: 12px 10px;
+  }
+  .menu{
+    gap:12px;
+  }
+  .menu a{
+    font-size:11px;
+    letter-spacing:0.5px;
+  }
+  .logo-top{
+    width: min(70vw, 240px);
+    max-width: 240px;
+    max-height: 38vh;
+  }
+  .logo-fixed{
+    width: min(70vw, 240px);
+  }
+  .logo-top.small{
+    width:84px;
+    top:60px;
+  }
+  .logo-top.esquina{
+    width:84px;
+    top: 12px;
+    left:10px;
+  }
+  .hero{
+    padding: 90px 15px 40px;
+  }
+  .services{
+    padding:80px 15px;
+  }
+  #nosotros{
+    padding:80px 15px;
+  }
+  .contact{
+    padding:70px 15px;
+  }
+  .services-grid{
+    grid-template-columns:1fr;
+    gap:30px;
+  }
+  #nosotros .cards{
+    grid-template-columns:1fr;
+  }
+  .service img{
+    height:200px;
+  }
+  .hero h1{
+    gap: 0;
+    margin-bottom: 15px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(34px, 12vw, 56px);
+    letter-spacing: clamp(4px, 1.5vw, 8px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(15px, 4.5vw, 22px);
+    letter-spacing: 1px;
+    padding-bottom: 6px;
+  }
+  .hero p{
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .btn{
+    font-size:12px;
+    padding:13px 24px;
+    letter-spacing: 1.5px;
+  }
+  .modal-content{
+    padding:20px;
+    font-size:16px;
+  }
+  .map{
+    height:200px;
+  }
+  .content{
+    padding:20px 12px;
+  }
+  .mv-grid {
+    grid-template-columns: 1fr;
+  }
+  .valores-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+  }
+  .camion-nosotros img {
+    max-width: 100%;
+  }
+}
+
+/* Móviles muy pequeños (hasta 360px) */
+@media(max-width:360px){
+  .menu{
+    gap: 8px;
+  }
+  .menu a{
+    font-size:10px;
+    letter-spacing:0.3px;
+  }
+  .logo-top{
+    width: min(72vw, 200px);
+    max-width: 200px;
+  }
+  .logo-fixed{
+    width: min(72vw, 200px);
+  }
+  .logo-top.small{
+    width:70px;
+    top:56px;
+  }
+  .logo-top.esquina{
+    width:70px;
+    top: 10px;
+    left:8px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(30px, 12vw, 48px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(13px, 4.5vw, 18px);
+  }
+  .hero p{
+    font-size: 13px;
+  }
+  .btn{
+    font-size: 11px;
+    padding: 11px 18px;
+    letter-spacing: 1px;
+  }
+  .valores-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ajustes de orientación horizontal en móviles */
+@media (max-height: 500px) and (orientation: landscape){
+  .logo-top{
+    width: min(30vw, 240px);
+    max-height: 60vh;
+  }
+  .logo-fixed{
+    width: min(30vw, 240px);
+  }
+  .hero{
+    padding: 80px 20px 40px;
+  }
+  .hero h1 .amsterdam{
+    font-size: clamp(32px, 7vw, 60px);
+  }
+  .hero h1 .spa{
+    font-size: clamp(14px, 2.5vw, 24px);
+  }
+}
+
+/* Logo compacto: misma posición horizontal, alineado a la altura del menú */
+.logo-top.small,
+.logo-top.esquina{
+  position: fixed !important;
+  width: clamp(108px, 12vw, 180px);
+  max-height: 21.25vh;
+  top: 12px;
+  left: clamp(10px, 2vw, 24px) !important;
+  right: auto !important;
+  transform: none !important;
+  z-index: 101;
+  opacity: 0.9;
+}
+
+@media(max-width:992px){
+  .logo-top.small,
+  .logo-top.esquina{
+    top: calc(var(--nav-safe-space, 64px) + 8px);
+  }
+}
+
+@media(max-width:768px){
+  .logo-top.small,
+  .logo-top.esquina{
+    --nav-safe-space: 82px;
+    width: clamp(96px, 18vw, 138px);
+  }
+}
+
+@media(max-width:480px){
+  .logo-top.small,
+  .logo-top.esquina{
+    --nav-safe-space: 96px;
+    width: clamp(88px, 24vw, 118px);
+  }
+}
+
+@media(max-width:360px){
+  .logo-top.small,
+  .logo-top.esquina{
+    --nav-safe-space: 108px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- FONDO DECORATIVO -->
+<div class="fondo-web"></div>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+<img src="assets/images/sin fondo con nombre.png" alt="Logo">
+</div>
+
+<!-- LOGO PRINCIPAL -->
+<img src="assets/images/logo_completo_png.png" class="logo-top" id="logoPrincipal" alt="Transportes Amsterdam">
+
+<!-- WATERMARK -->
+<img src="assets/images/sin fondo con nombre.png" class="logo-fixed" alt="Watermark">
+
+<!-- NAV -->
+<nav class="navbar" id="navbar">
+<ul class="menu">
+<li><a href="#inicio" id="btnInicio">INICIO</a></li>
+<li><a href="#nosotros" id="btnNosotros">NOSOTROS</a></li>
+<li><a href="#servicios" id="btnServicios">SERVICIOS</a></li>
+<li><a href="#cobertura" id="btnCobertura">COBERTURA</a></li>
+<li><a href="#contacto" id="btnContacto">CONTACTO</a></li>
+</ul>
+</nav>
+
+<!-- HERO - AMSTERDAM GRANDE + SPA PEQUEÑO -->
+<section id="inicio" class="hero">
+<div class="overlay"></div>
+<div class="content" id="heroContent">
+  <h1>
+    <!-- PNG DE AMSTERDAM: coloca amsterdam-letras.png junto a este HTML; aquí se muestra solo la palabra del logo -->
+    <span class="amsterdam"><img class="amsterdam-wordmark" src="assets/images/letrasamsterdam.png" alt="Amsterdam"></span>
+    <span class="spa">Spa</span>
+  </h1>
+  <p>Transporte de carga por carretera · Importación, compra, venta y arriendo de maquinarias, repuestos y neumáticos</p>
+  <div class="hero-actions">
+    <a href="#contacto" class="btn">Cotiza tu envío</a>
+    <a href="#cobertura" class="btn btn-secondary">Ver cobertura</a>
+  </div>
+</div>
+</section>
+
+<!-- NOSOTROS -->
+<section id="nosotros">
+<h2>NOSOTROS</h2>
+
+<div class="nosotros-intro">
+<div class="nosotros-block">
+<h3>¿QUIÉNES SOMOS?</h3>
+<p>
+<strong>Transportes Amsterdam</strong> es una empresa chilena con más de 15 años de trayectoria en el rubro del transporte de carga por carretera y el comercio internacional de maquinarias, repuestos y neumáticos. Nacimos en la Zona Franca de Iquique con la convicción de conectar el norte de Chile con el resto del país, ofreciendo soluciones logísticas confiables, ágiles y adaptadas a las necesidades de cada cliente.
+</p>
+<p>
+A lo largo de los años hemos construido una flota propia moderna, equipada con sistemas de monitoreo GPS en tiempo real, lo que nos permite garantizar la seguridad y trazabilidad de cada carga que transportamos. Nuestro equipo humano está conformado por profesionales con amplia experiencia en logística, comercio exterior y atención al cliente, quienes trabajan día a día para superar las expectativas de quienes confían en nosotros.
+</p>
+<p>
+Hoy, Transportes Amsterdam se posiciona como un socio estratégico para empresas de construcción, minería, industria y comercio que requieren mover sus productos a lo largo de todo el territorio nacional, respaldados siempre por un servicio cercano, transparente y eficiente.
+</p>
+</div>
+
+<!-- ============================================ -->
+<!-- IMAGEN DEL CAMIÓN - REEMPLAZA EL NOMBRE DEL ARCHIVO AQUÍ -->
+<!-- ============================================ -->
+<div class="camion-nosotros">
+  <div class="camion-image-wrap">
+  <img src="assets/images/camion-amsterdam-remolque-natural.png" alt="Camión azul de Transportes Amsterdam con remolque blanco y su logo">
+  </div>
+  <div class="camion-image-wrap">
+  <img src="assets/images/camion-original-maquinaria-pesada.png" alt="Camión Scania de Transportes Amsterdam con rampla de cama baja transportando una excavadora">
+  </div>
+</div>
+</div>
+
+<div class="mv-grid">
+<div class="mv-card">
+<span class="mv-icon"><i data-lucide="target" class="lucide-icon" aria-hidden="true"></i></span>
+<h4>MISIÓN</h4>
+<p>
+Brindar transporte de carga y soluciones de suministro de maquinaria, repuestos y neumáticos, con seguridad, eficiencia y cumplimiento en cada entrega.
+</p>
+</div>
+
+<div class="mv-card">
+<span class="mv-icon"><i data-lucide="route" class="lucide-icon" aria-hidden="true"></i></span>
+<h4>VISIÓN</h4>
+<p>
+Ser un socio logístico de referencia en Chile, reconocido por su confiabilidad, cobertura y excelencia en el servicio.
+</p>
+</div>
+</div>
+
+<div class="nosotros-block valores-heading">
+<h3>NUESTROS VALORES</h3>
+</div>
+
+<div class="valores-grid">
+<div class="valor">
+<span class="valor-icon"><i data-lucide="handshake" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>COMPROMISO</h5>
+<p>Cumplimos lo que prometemos, en tiempo y forma.</p>
+</div>
+
+<div class="valor">
+<span class="valor-icon"><i data-lucide="shield-check" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>SEGURIDAD</h5>
+<p>Protegemos cada carga como si fuera nuestra.</p>
+</div>
+
+<div class="valor">
+<span class="valor-icon"><i data-lucide="gauge" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>EFICIENCIA</h5>
+<p>Optimizamos recursos para entregar resultados ágiles.</p>
+</div>
+
+<div class="valor">
+<span class="valor-icon"><i data-lucide="eye" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>TRANSPARENCIA</h5>
+<p>Comunicación clara y honesta con cada cliente.</p>
+</div>
+
+<div class="valor">
+<span class="valor-icon"><i data-lucide="leaf" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>RESPONSABILIDAD</h5>
+<p>Actuamos con ética y cuidado del medio ambiente.</p>
+</div>
+
+<div class="valor">
+<span class="valor-icon"><i data-lucide="award" class="lucide-icon" aria-hidden="true"></i></span>
+<h5>EXCELENCIA</h5>
+<p>Buscamos superar las expectativas en cada servicio.</p>
+</div>
+</div>
+
+<div class="respaldo-heading">
+<h3>LO QUE NOS RESPALDA</h3>
+</div>
+
+<div class="cards">
+
+<div class="card">
+<div class="card-icon"><i data-lucide="truck" class="lucide-icon" aria-hidden="true"></i></div>
+<h3>+15 Años</h3>
+<p style="color:#777;font-size:clamp(12px, 1vw, 14px);">de experiencia en transporte y comercio internacional</p>
+</div>
+
+<div class="card">
+<div class="card-icon"><i data-lucide="map-pin" class="lucide-icon" aria-hidden="true"></i></div>
+<h3>Flota propia con GPS</h3>
+<p style="color:#777;font-size:clamp(12px, 1vw, 14px);">Seguimiento de la carga en tiempo real</p>
+</div>
+
+<div class="card">
+<div class="card-icon"><i data-lucide="package" class="lucide-icon" aria-hidden="true"></i></div>
+<h3>Cobertura nacional</h3>
+<p style="color:#777;font-size:clamp(12px, 1vw, 14px);">Conectamos Chile de norte a sur</p>
+</div>
+
+</div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios" class="services">
+<h2>SERVICIOS</h2>
+<div class="services-grid">
+
+<div class="service" onclick="openModal('Transporte de carga por carretera en todo Chile con flota propia y monitoreo GPS en tiempo real.')">
+<img src="assets/images/transporte-carga.jpg" alt="Transporte de carga">
+<span class="service-label">Transporte</span>
+</div>
+
+<div class="service" onclick="openModal('Importamos maquinaria, repuestos y neumáticos con gestión aduanera integral.')">
+<img src="https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&amp;h=420&amp;fit=crop" alt="Maquinarias">
+<span class="service-label">Importación y gestión aduanera</span>
+</div>
+
+<div class="service" onclick="openModal('Venta y arriendo de maquinaria pesada para construcción, minería e industria.')">
+<img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=600&amp;h=420&amp;fit=crop" alt="Construcción">
+<span class="service-label">Maquinaria pesada</span>
+</div>
+
+<div class="service" onclick="openModal('Repuestos originales y alternativos para maquinaria pesada, además de neumáticos de calidad para distintos tipos de vehículos.')">
+<img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&amp;h=420&amp;fit=crop" alt="Repuestos">
+<span class="service-label">Repuestos y neumáticos</span>
+</div>
+
+</div>
+</section>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="closeModal()">
+<div class="modal-content" id="modal-text"></div>
+</div>
+
+
+<!-- COBERTURA -->
+<section id="cobertura" class="coverage">
+  <div class="coverage-inner">
+    <div class="coverage-copy">
+      <span class="coverage-kicker">Cobertura de norte a sur</span>
+      <h2>Conectamos Chile por carretera</h2>
+      <p>Revisa nuestra cobertura referencial desde Arica hasta Punta Arenas. Cuéntanos tu origen, destino y tipo de carga para confirmar disponibilidad y condiciones de servicio.</p>
+      <div class="coverage-range">
+        <div><span class="coverage-dot north"></span><span><strong>Arica</strong><small>Punto norte</small></span></div>
+        <div class="coverage-divider" aria-hidden="true"></div>
+        <div><span class="coverage-dot south"></span><span><strong>Punta Arenas</strong><small>Punto sur</small></span></div>
+      </div>
+      <a class="coverage-cta" href="#contacto"><span id="coverageCtaText">Consultar ruta y disponibilidad</span><span aria-hidden="true">→</span></a>
+    </div>
+    <div class="chile-map-card">
+      <div class="route-map-layout">
+        <!-- Mapa de Chile incluido en la carpeta del sitio -->
+        <div class="chile-map-track">
+          <img
+            class="chile-map-image"
+            src="assets/images/chile.svg"
+            alt="Mapa real de Chile con sus regiones"
+            width="548" height="2000"
+            loading="lazy">
+          <svg class="map-route-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M54 3.5 C54 18 53 34 52 50 C51 66 52 81 54 92.5"/>
+          </svg>
+          <img
+            class="route-truck"
+            src="assets/images/camion-logo-ruta.png"
+            alt=""
+            aria-hidden="true"
+            width="1536" height="1024">
+        </div>
+        <ol class="coverage-cities" aria-label="Ciudades de referencia en la ruta de norte a sur">
+          <li class="endpoint" style="--map-y:3.5%"><button class="coverage-city-button" type="button" data-city="Arica" data-info="Punto de referencia para rutas en el extremo norte." aria-pressed="false"><strong>Arica</strong></button></li>
+          <li style="--map-y:7%"><button class="coverage-city-button" type="button" data-city="Iquique" data-info="Sede principal de Transportes Amsterdam en la Zona Franca." aria-pressed="false">Iquique</button></li>
+          <li style="--map-y:13%"><button class="coverage-city-button" type="button" data-city="Calama" data-info="Consulta disponibilidad para viajes desde o hacia Calama." aria-pressed="false">Calama</button></li>
+          <li style="--map-y:16.5%"><button class="coverage-city-button" type="button" data-city="Antofagasta" data-info="Consulta disponibilidad para viajes desde o hacia Antofagasta." aria-pressed="false">Antofagasta</button></li>
+          <li style="--map-y:26%"><button class="coverage-city-button" type="button" data-city="Copiapó" data-info="Consulta disponibilidad para rutas en la Región de Atacama." aria-pressed="false">Copiapó</button></li>
+          <li style="--map-y:32%"><button class="coverage-city-button" type="button" data-city="La Serena" data-info="Consulta disponibilidad para viajes desde o hacia La Serena." aria-pressed="false">La Serena</button></li>
+          <li style="--map-y:42%"><button class="coverage-city-button" type="button" data-city="Santiago" data-info="Consulta disponibilidad para conexiones con la zona central." aria-pressed="false">Santiago</button></li>
+          <li style="--map-y:47%"><button class="coverage-city-button" type="button" data-city="Talca" data-info="Consulta disponibilidad para rutas desde o hacia Talca." aria-pressed="false">Talca</button></li>
+          <li style="--map-y:52%"><button class="coverage-city-button" type="button" data-city="Concepción" data-info="Consulta disponibilidad para viajes hacia la zona centro-sur." aria-pressed="false">Concepción</button></li>
+          <li style="--map-y:57.5%"><button class="coverage-city-button" type="button" data-city="Temuco" data-info="Consulta disponibilidad para rutas desde o hacia Temuco." aria-pressed="false">Temuco</button></li>
+          <li style="--map-y:61%"><button class="coverage-city-button" type="button" data-city="Valdivia" data-info="Consulta disponibilidad para rutas desde o hacia Valdivia." aria-pressed="false">Valdivia</button></li>
+          <li style="--map-y:65%"><button class="coverage-city-button" type="button" data-city="Puerto Montt" data-info="Consulta disponibilidad para rutas hacia el sur del país." aria-pressed="false">Puerto Montt</button></li>
+          <li style="--map-y:78%"><button class="coverage-city-button" type="button" data-city="Coyhaique" data-info="Consulta disponibilidad para viajes desde o hacia Coyhaique." aria-pressed="false">Coyhaique</button></li>
+          <li class="endpoint" style="--map-y:92.5%"><button class="coverage-city-button" type="button" data-city="Punta Arenas" data-info="Consulta disponibilidad para rutas al extremo sur de Chile." aria-pressed="false"><strong>Punta Arenas</strong></button></li>
+        </ol>
+      </div>
+      <p class="route-live-status" id="routeLiveStatus">Camión en ruta: Arica</p>
+      <div class="city-selection" id="citySelection" aria-live="polite" hidden>
+        <strong id="selectedCityName"></strong>
+        <p id="selectedCityInfo"></p>
+      </div>
+      <p class="map-caption">Recorrido referencial · Confirma disponibilidad por ruta</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="contact">
+<h2>CONTACTO</h2>
+<p><i data-lucide="phone" class="contact-icon lucide-icon" aria-hidden="true"></i> +569 3648 9466</p>
+<p><i data-lucide="mail" class="contact-icon lucide-icon" aria-hidden="true"></i> j.apablaza@impamsterdam.cl</p>
+<p><i data-lucide="globe" class="contact-icon lucide-icon" aria-hidden="true"></i> www.impamsterdam.cl</p>
+<p style="color:#888; margin-top:10px;">Manzana 12, Sitio 23, Of 301 · Zona Franca Iquique</p>
+
+<div class="socials" style="display:flex; justify-content:center; gap:clamp(20px, 4vw, 30px); margin-top:30px; flex-wrap:wrap;">
+
+  <a href="https://www.instagram.com/transportes.amsterdam?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+    <img src="assets/images/instagram.png" alt="Instagram" class="social-icon">
+  </a>
+
+  <a href="https://wa.me/56936489466" target="_blank" rel="noopener" class="social-link" aria-label="WhatsApp">
+    <img src="assets/images/whatsapp.png" alt="WhatsApp" class="social-icon">
+  </a>
+
+
+</div>
+
+<iframe class="map" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3811.415!2d-70.1508!3d-20.2203!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9153f3e0f0c0c0c1%3A0x8b2c0c0c0c0c0c0!2sIquique%2C%20Chile!5e0!3m2!1ses!2scl!4v1710000000000" allowfullscreen loading="lazy"></iframe>
+
+</section>
+
+<script src="assets/js/lucide.min.js"></script>
+<script>
+if (window.lucide) {
+  lucide.createIcons();
+}
+
+// LOADER
+window.addEventListener("load", ()=>{
+  setTimeout(() => {
+    document.getElementById("loader").classList.add("hidden");
+  }, 600);
+});
+
+let inactivityTimer;
+const INACTIVITY_DELAY = 3000;
+
+function showContent() {
+  const logo = document.getElementById("logoPrincipal");
+  const content = document.getElementById("heroContent");
+  const scrollY = window.scrollY;
+  const viewportH = window.innerHeight;
+  const serviciosOffset = document.getElementById("servicios").offsetTop;
+  const nosotrosOffset = document.getElementById("nosotros").offsetTop;
+  const contactoOffset = document.getElementById("contacto").offsetTop;
+
+  const enSeccionPosterior = (
+    scrollY >= serviciosOffset - 50 ||
+    scrollY >= nosotrosOffset - 50 ||
+    scrollY >= contactoOffset - 50
+  );
+
+  if (enSeccionPosterior) {
+    logo.classList.add("esquina");
+    logo.classList.remove("small");
+  } else {
+    logo.classList.add("small");
+  }
+
+  content.classList.add("visible");
+}
+
+function hideContent() {
+  const logo = document.getElementById("logoPrincipal");
+  const content = document.getElementById("heroContent");
+  
+  if(window.scrollY < 120) {
+    logo.classList.remove("small", "esquina");
+    content.classList.remove("visible");
+  }
+}
+
+function resetInactivityTimer() {
+  clearTimeout(inactivityTimer);
+  showContent();
+  inactivityTimer = setTimeout(() => {
+    hideContent();
+  }, INACTIVITY_DELAY);
+}
+
+document.addEventListener("mousemove", resetInactivityTimer);
+
+window.addEventListener("scroll", ()=>{
+  const navbar = document.getElementById("navbar");
+  const logo = document.getElementById("logoPrincipal");
+  const scrollY = window.scrollY;
+  const viewportH = window.innerHeight;
+
+  navbar.classList.toggle("scrolled", scrollY > 50);
+
+  if (scrollY < 100) {
+    logo.classList.remove("small", "esquina");
+  } else if (scrollY < viewportH * 0.8) {
+    logo.classList.add("small");
+    logo.classList.remove("esquina");
+  } else {
+    logo.classList.remove("small");
+    logo.classList.add("esquina");
+  }
+
+  resetInactivityTimer();
+});
+
+document.getElementById("btnServicios").addEventListener("click", function(e) {
+  e.preventDefault();
+  const logo = document.getElementById("logoPrincipal");
+  logo.classList.remove("small");
+  logo.classList.add("esquina");
+  document.getElementById("servicios").scrollIntoView({ behavior: "smooth" });
+  clearTimeout(inactivityTimer);
+});
+
+document.getElementById("btnNosotros").addEventListener("click", function(e) {
+  e.preventDefault();
+  const logo = document.getElementById("logoPrincipal");
+  logo.classList.remove("small");
+  logo.classList.add("esquina");
+  document.getElementById("nosotros").scrollIntoView({ behavior: "smooth" });
+  clearTimeout(inactivityTimer);
+});
+
+document.getElementById("btnCobertura").addEventListener("click", function(e) {
+  e.preventDefault();
+  const logo = document.getElementById("logoPrincipal");
+  logo.classList.remove("small");
+  logo.classList.add("esquina");
+  document.getElementById("cobertura").scrollIntoView({ behavior: "smooth" });
+  clearTimeout(inactivityTimer);
+});
+
+document.getElementById("btnContacto").addEventListener("click", function(e) {
+  e.preventDefault();
+  const logo = document.getElementById("logoPrincipal");
+  logo.classList.remove("small");
+  logo.classList.add("esquina");
+  document.getElementById("contacto").scrollIntoView({ behavior: "smooth" });
+  clearTimeout(inactivityTimer);
+});
+
+document.getElementById("btnInicio").addEventListener("click", function(e) {
+  e.preventDefault();
+  const logo = document.getElementById("logoPrincipal");
+  logo.classList.remove("small", "esquina");
+  document.getElementById("inicio").scrollIntoView({ behavior: "smooth" });
+  resetInactivityTimer();
+});
+
+document.querySelectorAll(".coverage-city-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const city = button.dataset.city;
+    document.querySelectorAll(".coverage-city-button").forEach((cityButton) => {
+      const selected = cityButton === button;
+      cityButton.setAttribute("aria-pressed", String(selected));
+      cityButton.classList.toggle("is-selected", selected);
+      cityButton.closest("li").classList.toggle("is-selected", selected);
+    });
+
+    document.getElementById("selectedCityName").textContent = city;
+    document.getElementById("selectedCityInfo").textContent = button.dataset.info;
+    document.getElementById("citySelection").hidden = false;
+    document.getElementById("coverageCtaText").textContent = `Consultar ruta desde/hacia ${city}`;
+  });
+});
+
+const routeCard = document.querySelector(".chile-map-card");
+const routeList = document.querySelector(".coverage-cities");
+const routeTruck = document.querySelector(".route-truck");
+const routeButtons = [...document.querySelectorAll(".coverage-city-button")];
+const routeLiveStatus = document.getElementById("routeLiveStatus");
+const reducedMotionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+if (routeCard && routeList && routeTruck && routeButtons.length && !reducedMotionPreference.matches) {
+  let routeFrame = null;
+
+  function updatePassingCity() {
+    const truckBounds = routeTruck.getBoundingClientRect();
+    const truckCenter = truckBounds.top + truckBounds.height / 2;
+    let nearestButton = routeButtons[0];
+    let nearestDistance = Infinity;
+
+    routeButtons.forEach((button) => {
+      const cityBounds = button.closest("li").getBoundingClientRect();
+      const distance = Math.abs(truckCenter - (cityBounds.top + cityBounds.height / 2));
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestButton = button;
+      }
+    });
+
+    routeButtons.forEach((button) => {
+      button.closest("li").classList.toggle("is-passing", button === nearestButton);
+    });
+
+    const status = `Camión en ruta: ${nearestButton.dataset.city}`;
+    if (routeLiveStatus.textContent !== status) routeLiveStatus.textContent = status;
+    routeFrame = window.requestAnimationFrame(updatePassingCity);
+  }
+
+  if ("IntersectionObserver" in window) {
+    const routeObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && routeFrame === null) {
+        routeFrame = window.requestAnimationFrame(updatePassingCity);
+      } else if (!entries[0].isIntersecting && routeFrame !== null) {
+        window.cancelAnimationFrame(routeFrame);
+        routeFrame = null;
+        routeButtons.forEach((button) => button.closest("li").classList.remove("is-passing"));
+      }
+    }, { rootMargin: "100px 0px" });
+    routeObserver.observe(routeCard);
+  } else {
+    routeFrame = window.requestAnimationFrame(updatePassingCity);
+  }
+}
+
+document.addEventListener("keydown", resetInactivityTimer);
+document.addEventListener("touchstart", resetInactivityTimer, { passive: true });
+document.addEventListener("touchmove", resetInactivityTimer, { passive: true });
+
+setTimeout(() => {
+  resetInactivityTimer();
+}, 1000);
+
+function openModal(text){
+  const modal = document.getElementById("modal");
+  const modalText = document.getElementById("modal-text");
+  
+  modalText.innerText = text;
+  modal.classList.add("active");
+  
+  // Bloquea el desplazamiento sin fijar el body, evitando saltos al cerrar.
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(){
+  const modal = document.getElementById("modal");
+  if (!modal.classList.contains("active")) return;
+
+  modal.classList.remove("active");
+  
+  document.body.style.overflow = "";
+}
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") {
+    closeModal();
+  }
+});
+
+document.getElementById("modal").addEventListener("click", function(e) {
+  if(e.target === this) {
+    closeModal();
+  }
+});
+</script>
+
+</body>
+</html>
