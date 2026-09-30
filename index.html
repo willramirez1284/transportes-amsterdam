@@ -104,6 +104,7 @@ body{
   opacity:0.2;
 }
 .menu a{
+  display:inline-block;
   color:#0056b3;
   font-weight: bold;
   text-decoration:none;
@@ -114,6 +115,14 @@ body{
   opacity:1;
   transform:scale(1.2);
   color:#007bff;
+}
+@media (min-width:769px){
+  .menu a:hover{
+    color:#ff6b00;
+  }
+}
+.menu-toggle{
+  display:none;
 }
 
 /* LOGO PRINCIPAL */
@@ -412,6 +421,7 @@ body{
   display:flex;
 }
 .modal-content{
+  position:relative;
   background: #fff;
   color: #333;
   max-width:500px;
@@ -422,6 +432,70 @@ body{
   font-weight: bold;
   line-height: 1.6;
   word-wrap:break-word;
+}
+.modal-content.value-detail{
+  border-bottom:4px solid #ff6b00;
+  text-align:left;
+}
+.modal-value-icon{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:76px;
+  height:76px;
+  margin:0 auto 14px;
+  color:#0056b3;
+}
+.modal-value-icon[hidden]{
+  display:none;
+}
+.modal-value-icon .valor-icon{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0;
+  font-size:64px;
+}
+.modal-value-icon .lucide-icon{
+  width:64px;
+  height:64px;
+  stroke:#0056b3;
+}
+.modal-value-icon.is-animated{
+  animation:modal-value-pop .9s cubic-bezier(.2,.8,.3,1) both;
+}
+@keyframes modal-value-pop{
+  from{opacity:0;transform:translateY(8px) scale(.75)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.modal-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:50%;
+  background:#eef6ff;
+  color:#0056b3;
+  font-size:28px;
+  line-height:1;
+  cursor:pointer;
+}
+.modal-close:focus-visible{
+  outline:3px solid rgba(0,123,255,.4);
+  outline-offset:2px;
+}
+.modal-title{
+  margin:4px 48px 12px 0;
+  color:#0056b3;
+  font-size:clamp(20px, 4vw, 28px);
+  line-height:1.25;
+}
+.modal-description{
+  margin:0;
+  font-weight:500;
 }
 
 /* NOSOTROS */
@@ -671,11 +745,16 @@ body{
   transition: 0.3s;
   border-bottom: 3px solid #007bff;
   overflow-wrap: anywhere;
+  cursor:pointer;
 }
 
 .valor:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 86, 179, 0.12);
+}
+.valor:focus-visible{
+  outline:3px solid rgba(0,123,255,.45);
+  outline-offset:3px;
 }
 
 .valor .valor-icon {
@@ -973,6 +1052,7 @@ body{
 @media(prefers-reduced-motion:reduce){
   .route-truck,.coverage-cities li.is-passing::before{animation:none}
   .coverage-city-button{transition:none}
+  .modal-value-icon.is-animated{animation:none}
   .route-live-status{display:none}
 }
 @media(max-width:1000px){
@@ -1166,16 +1246,84 @@ body{
     max-width: 520px;
   }
   .navbar{
-    padding: 16px 20px;
+    justify-content:flex-end;
+    padding: 8px 16px;
   }
-  .menu{
-    gap:20px;
-    flex-wrap:wrap;
+  .menu-toggle{
+    width:44px;
+    height:44px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
     justify-content:center;
+    gap:5px;
+    border:1px solid rgba(0,86,179,.18);
+    border-radius:10px;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 3px 12px rgba(0,40,90,.12);
+    color:#0056b3;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
   }
-  .menu a{
-    font-size:13px;
+  .menu-toggle:focus-visible{
+    outline:3px solid rgba(0,123,255,.4);
+    outline-offset:3px;
+  }
+  .menu-toggle span{
+    display:block;
+    width:21px;
+    height:2px;
+    border-radius:2px;
+    background:#0056b3;
+    transition:transform .2s ease, opacity .2s ease;
+  }
+  .navbar.menu-open .menu-toggle span:first-child{
+    transform:translateY(7px) rotate(45deg);
+  }
+  .navbar.menu-open .menu-toggle span:nth-child(2){
+    opacity:0;
+  }
+  .navbar.menu-open .menu-toggle span:last-child{
+    transform:translateY(-7px) rotate(-45deg);
+  }
+  .navbar .menu{
+    display:none;
+    position:absolute;
+    top:calc(100% + 8px);
+    right:12px;
+    width:min(250px, calc(100vw - 24px));
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    padding:8px;
+    border:1px solid rgba(0,86,179,.12);
+    border-radius:14px;
+    background:rgba(255,255,255,.98);
+    box-shadow:0 12px 32px rgba(0,40,90,.2);
+    list-style:none;
+  }
+  .navbar.menu-open .menu{
+    display:flex;
+  }
+  .navbar .menu a{
+    display:block;
+    min-height:48px;
+    padding:15px 14px;
+    border-radius:9px;
+    font-size:14px;
     letter-spacing:1px;
+  }
+  .navbar .menu a.is-active{
+    color:#ff6b00;
+    background:#fff0e6;
+  }
+  .navbar .menu a:hover,
+  .navbar .menu:hover a{
+    opacity:1;
+    transform:none;
+  }
+  .navbar .menu a:hover{
+    background:#eef6ff;
   }
   .logo-top{
     width: min(60vw, 320px);
@@ -1501,7 +1649,10 @@ body{
 
 <!-- NAV -->
 <nav class="navbar" id="navbar">
-<ul class="menu">
+<button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="menuPrincipal">
+  <span></span><span></span><span></span>
+</button>
+<ul class="menu" id="menuPrincipal">
 <li><a href="#inicio" id="btnInicio">INICIO</a></li>
 <li><a href="#nosotros" id="btnNosotros">NOSOTROS</a></li>
 <li><a href="#servicios" id="btnServicios">SERVICIOS</a></li>
@@ -1674,8 +1825,13 @@ Ser un socio logístico de referencia en Chile, reconocido por su confiabilidad,
 </section>
 
 <!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal()">
-<div class="modal-content" id="modal-text"></div>
+<div class="modal" id="modal">
+<div class="modal-content" id="modal-text" role="dialog" aria-modal="true" aria-label="Detalle" aria-describedby="modal-description">
+  <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar detalle" onclick="closeModal()">&times;</button>
+  <span class="modal-value-icon" id="modalValueIcon" aria-hidden="true" hidden></span>
+  <h3 class="modal-title" id="modal-title"></h3>
+  <p class="modal-description" id="modal-description"></p>
+</div>
 </div>
 
 
@@ -1891,6 +2047,47 @@ document.getElementById("btnInicio").addEventListener("click", function(e) {
   resetInactivityTimer();
 });
 
+const menuToggle = document.getElementById("menuToggle");
+const navbar = document.getElementById("navbar");
+
+function closeMobileMenu() {
+  navbar.classList.remove("menu-open");
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Abrir menú");
+}
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = navbar.classList.toggle("menu-open");
+  menuToggle.setAttribute("aria-expanded", String(isOpen));
+  menuToggle.setAttribute("aria-label", isOpen ? "Cerrar menú" : "Abrir menú");
+});
+
+document.querySelectorAll("#menuPrincipal a").forEach((link) => {
+  link.addEventListener("click", () => {
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      document.querySelectorAll("#menuPrincipal a").forEach((menuLink) => {
+        const isCurrent = menuLink === link;
+        menuLink.classList.toggle("is-active", isCurrent);
+        if (isCurrent) {
+          menuLink.setAttribute("aria-current", "location");
+        } else {
+          menuLink.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    closeMobileMenu();
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeMobileMenu();
+});
+
+document.addEventListener("click", (event) => {
+  if (!navbar.contains(event.target)) closeMobileMenu();
+});
+
 document.querySelectorAll(".coverage-city-button").forEach((button) => {
   button.addEventListener("click", () => {
     const city = button.dataset.city;
@@ -1966,12 +2163,34 @@ setTimeout(() => {
   resetInactivityTimer();
 }, 1000);
 
-function openModal(text){
+function openModal(text, title = ""){
   const modal = document.getElementById("modal");
-  const modalText = document.getElementById("modal-text");
-  
-  modalText.innerText = text;
+  const modalTitle = document.getElementById("modal-title");
+  const modalDescription = document.getElementById("modal-description");
+  const modalContent = document.getElementById("modal-text");
+  const modalValueIcon = document.getElementById("modalValueIcon");
+
+  modalTitle.textContent = title;
+  modalTitle.hidden = !title;
+  modalDescription.textContent = text;
+  modalContent.classList.toggle("value-detail", Boolean(title));
+  modalContent.setAttribute("aria-label", title || "Detalle del servicio");
+
+  modalValueIcon.replaceChildren();
+  modalValueIcon.hidden = !title;
+  modalValueIcon.className = "modal-value-icon";
+  if (title) {
+    const selectedValue = [...document.querySelectorAll(".valor")].find((card) =>
+      card.querySelector("h5").textContent.trim() === title
+    );
+    const icon = selectedValue?.querySelector(".valor-icon");
+    if (icon) modalValueIcon.append(icon.cloneNode(true));
+    void modalValueIcon.offsetWidth;
+    modalValueIcon.classList.add("is-animated");
+  }
+
   modal.classList.add("active");
+  document.getElementById("modalClose").focus();
   
   // Bloquea el desplazamiento sin fijar el body, evitando saltos al cerrar.
   document.body.style.overflow = "hidden";
@@ -1996,6 +2215,24 @@ document.getElementById("modal").addEventListener("click", function(e) {
   if(e.target === this) {
     closeModal();
   }
+});
+
+document.querySelectorAll(".valor").forEach((card) => {
+  const title = card.querySelector("h5").textContent.trim();
+  const description = card.querySelector("p").textContent.trim();
+  const showDetails = () => openModal(description, title);
+
+  card.setAttribute("role", "button");
+  card.setAttribute("tabindex", "0");
+  card.setAttribute("aria-label", `Leer el valor ${title}`);
+  card.setAttribute("aria-haspopup", "dialog");
+  card.addEventListener("click", showDetails);
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      showDetails();
+    }
+  });
 });
 </script>
 
